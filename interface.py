@@ -2,6 +2,8 @@ from tkinter import *
 
 def opensignin():
     def get():
+        global login
+        global password
         login = login_entry.get()
         password = password_entry.get()
         window.destroy()
@@ -33,6 +35,8 @@ def opensignin():
 
 def opensignup():
     def get():
+        global login
+        global password
         login = login_entry.get()
         password = password_entry.get()
         window.destroy()
