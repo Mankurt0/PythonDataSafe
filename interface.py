@@ -35,6 +35,7 @@ def opensignup():
     def get():
         login = login_entry.get()
         password = password_entry.get()
+        window.destroy()
     window = Toplevel()
     window.title('Регистрация')
     window.geometry("400x100")
