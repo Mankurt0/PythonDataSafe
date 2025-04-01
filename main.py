@@ -75,20 +75,12 @@ def openmain():
     """ label = Label(root, text = 'Пройдите аутентификацию')
     label.grid(row = 1, column = 1) """
 
-    # создаем набор вкладок
     notebook = ttk.Notebook()
-    notebook.pack(expand=True, fill=BOTH)
-    
-    # создаем пару фреймвов
-    frame1 = ttk.Frame(notebook)
-    frame2 = ttk.Frame(notebook)
-    
-    frame1.pack(fill=BOTH, expand=True)
-    frame2.pack(fill=BOTH, expand=True)
-    
-    # добавляем фреймы в качестве вкладок
-    notebook.add(frame1, text="Текст")
-    notebook.add(frame2, text="Изображения")
+    notebook.grid(row = 0, column = 0, sticky=NSEW)
+    textlabel = ttk.Frame(notebook)
+    imagelabel = ttk.Frame(notebook)
+    notebook.add(textlabel, text="Текст")
+    notebook.add(imagelabel, text="Изображения")
 
     root.mainloop()
 
