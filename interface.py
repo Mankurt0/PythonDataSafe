@@ -84,8 +84,6 @@ auth_menu.add_command(label="Войти", command=opensignin)
 auth_menu.add_command(label="Зарегистрироваться", command=opensignup)
 auth_menu.add_separator()
 auth_menu.add_command(label="Выйти")
-main_menu.add_separator()
-main_menu.add_command(label="Закрыть", command=root.destroy)
 
 root.config(menu=main_menu)
 
@@ -93,3 +91,5 @@ label = Label(root, text = 'Пройдите аутентификацию')
 label.grid(row = 1, column = 1)
 
 root.mainloop()
+
+print(entpassword)
