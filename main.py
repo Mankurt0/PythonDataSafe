@@ -86,11 +86,15 @@ def openmain():
 
 def opensignin():
     """Открыть окно выхода"""
-    def get():
+    def getinfo():
         global entlogin
         global entpassword
         entlogin = login_entry.get()
         entpassword = password_entry.get()
+        cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
+        hashedpassword = cursor.fetchall()[0][0]
+        print(hashedpassword)
+        print(checkhash(entpassword, hashedpassword))
         window.destroy()
     window = Toplevel()
     window.title('Вход')
@@ -115,16 +119,17 @@ def opensignin():
     password_entry = Entry(window)
     password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
 
-    login_button = Button(window, text = 'Войти', command=get)
+    login_button = Button(window, text = 'Войти', command=getinfo)
     login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=30, sticky=NSEW)
 
 def opensignup():
     """Открыть окно регистрации"""
-    def get():
+    def getinfo():
         global entlogin
         global entpassword
         entlogin = login_entry.get()
         entpassword = password_entry.get()
+        adduser(entlogin, entpassword)
         window.destroy()
     window = Toplevel()
     window.title('Регистрация')
@@ -149,7 +154,7 @@ def opensignup():
     password_entry = Entry(window)
     password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
 
-    login_button = Button(window, text = 'Создать аккаунт', command=get)
+    login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
     login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
 
@@ -190,3 +195,5 @@ CREATE TABLE IF NOT EXISTS "images" (
 """)
 
 openmain()
+
+connection.close()
