@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import date
 from tkinter import *
+from tkinter import ttk
 from cryptography.fernet import Fernet
 import bcrypt
 
@@ -57,8 +58,8 @@ def openmain():
     root.geometry("600x500")
     root.minsize(600, 500)
     root.iconbitmap(default="icon.ico")
-    root.rowconfigure(index=1, weight=1)
-    root.columnconfigure(index=1, weight=1)
+    """ root.rowconfigure(index=1, weight=1)
+    root.columnconfigure(index=1, weight=1) """
 
     main_menu = Menu()
     auth_menu = Menu(tearoff=0)
@@ -71,8 +72,23 @@ def openmain():
 
     root.config(menu=main_menu)
 
-    label = Label(root, text = 'Пройдите аутентификацию')
-    label.grid(row = 1, column = 1)
+    """ label = Label(root, text = 'Пройдите аутентификацию')
+    label.grid(row = 1, column = 1) """
+
+    # создаем набор вкладок
+    notebook = ttk.Notebook()
+    notebook.pack(expand=True, fill=BOTH)
+    
+    # создаем пару фреймвов
+    frame1 = ttk.Frame(notebook)
+    frame2 = ttk.Frame(notebook)
+    
+    frame1.pack(fill=BOTH, expand=True)
+    frame2.pack(fill=BOTH, expand=True)
+    
+    # добавляем фреймы в качестве вкладок
+    notebook.add(frame1, text="Текст")
+    notebook.add(frame2, text="Изображения")
 
     root.mainloop()
 
