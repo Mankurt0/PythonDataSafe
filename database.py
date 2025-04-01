@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import date
+from crypto import hashpass
 
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -8,7 +9,7 @@ cursor = connection.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS "users" (
 	"username"	TEXT NOT NULL UNIQUE,
-	"password"	TEXT NOT NULL,
+	"password"	BLOB NOT NULL,
 	PRIMARY KEY("username")
 );
 """)
@@ -38,13 +39,13 @@ CREATE TABLE IF NOT EXISTS "images" (
 """)
 
 def adduser(login: str, password: str):
-    """Добавление пользователя в таблицу users без шифрования"""
-    
+    """Добавление пользователя в таблицу users"""
+    hpassword = hashpass(password)
     cursor.execute("""
 INSERT INTO "main"."users"
 ("username", "password")
 VALUES (?, ?);
-""", (login, password))
+""", (login, hpassword))
     connection.commit()
 
 def addnote(user, text):
