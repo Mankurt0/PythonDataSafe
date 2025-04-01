@@ -7,34 +7,33 @@ cursor = connection.cursor()
 #Создание таблицы users
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS "users" (
-	"id"	INTEGER,
-	"login"	TEXT NOT NULL UNIQUE,
+	"username"	TEXT NOT NULL UNIQUE,
 	"password"	TEXT NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT)
+	PRIMARY KEY("username")
 );
 """)
 
 #Создание таблицы notes
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS "notes" (
-	"id"	INTEGER,
-	"user_id"	INTEGER NOT NULL,
-	"text"	TEXT NOT NULL,
-	"date"	TEXT,
+	"id"	INTEGER NOT NULL UNIQUE,
+	"owner"	TEXT NOT NULL,
+	"text"	TEXT,
+	"date"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("user_id") REFERENCES "users"("id")
+	FOREIGN KEY("owner") REFERENCES "users"("username")
 );
 """)
 
 #Создание таблицы images
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS"images" (
-	"id"	INTEGER,
-	"user_id"	INTEGER NOT NULL,
-	"image"	TEXT NOT NULL,
-	"date"	TEXT,
+CREATE TABLE IF NOT EXISTS "images" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"owner"	TEXT NOT NULL,
+	"image"	TEXT,
+	"date"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("user_id") REFERENCES "users"("id")
+	FOREIGN KEY("owner") REFERENCES "users"("username")
 );
 """)
 
@@ -43,30 +42,30 @@ def adduser(login: str, password: str):
     
     cursor.execute("""
 INSERT INTO "main"."users"
-("login", "password")
+("username", "password")
 VALUES (?, ?);
 """, (login, password))
     connection.commit()
 
-def addnote(user_id, text):
+def addnote(user, text):
     """Добавление записи в таблицу notes без шифрования"""
     cursor.execute("""
 INSERT INTO "main"."notes"
-("user_id", "text", "date")
+("owner", "text", "date")
 VALUES (?, ?, ?);
-""", (user_id, text, date.today()))
+""", (user, text, date.today()))
     connection.commit()
 
-def addimage(user_id, image):
+def addimage(user, image):
     """Добавление изображения в таблицу images без шифрования"""
     cursor.execute("""
 INSERT INTO "main"."images"
-("user_id", "image", "date")
+("owner", "image", "date")
 VALUES (?, ?, ?);
-""", (user_id, image, date.today()))
+""", (user, image, date.today()))
     connection.commit()
     
 adduser("Юзерь", "Паролб")
-addnote(1, "техть")
-addimage(1, "ымаге")
+addnote("Юзерь", "техть")
+addimage("Юзерь", "ымаге")
 connection.close()
