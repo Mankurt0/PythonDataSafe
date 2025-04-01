@@ -31,7 +31,7 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS "images" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"owner"	TEXT NOT NULL,
-	"image"	TEXT,
+	"image"	BLOB,
 	"date"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("owner") REFERENCES "users"("username")
