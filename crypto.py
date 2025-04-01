@@ -1,13 +1,20 @@
 from cryptography.fernet import Fernet
 import bcrypt
-from interface import entlogin, entpassword
 
 def hashpass(password: str) -> bytes:
     encpassword = password.encode()
     hashedpassword = bcrypt.hashpw(encpassword, bcrypt.gensalt())
     return hashedpassword
 
-print(hashpass(entpassword))
+def checkhash(password, hashedpassword) -> bool:
+    encpassword = password.encode()
+    if bcrypt.checkpw(encpassword, hashedpassword):
+        return True
+    else:
+        return False
+
+print(hashpass("Гооол"))
+print(checkhash("Гооол", b'$2b$12$U3SyJjNB7XJI4V45TRmcCukA5An8BKe7oJEW6R57UbZLlgxBtk06m'))
 
 """ key = Fernet.generate_key() 
 f = Fernet(key)
