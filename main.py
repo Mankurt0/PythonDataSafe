@@ -72,15 +72,22 @@ def openmain():
 
     root.config(menu=main_menu)
 
-    """ label = Label(root, text = 'Пройдите аутентификацию')
-    label.grid(row = 1, column = 1) """
-
     notebook = ttk.Notebook()
     notebook.grid(row = 0, column = 0, sticky=NSEW)
-    textlabel = ttk.Frame(notebook)
-    imagelabel = ttk.Frame(notebook)
-    notebook.add(textlabel, text="Текст")
-    notebook.add(imagelabel, text="Изображения")
+    textframe = ttk.Frame(notebook)
+    imageframe = ttk.Frame(notebook)
+    textframe.grid(row = 0, column = 0, sticky=NSEW)
+    imageframe.grid(row = 0, column = 0, sticky=NSEW)
+    notebook.add(textframe, text="Текст")
+    notebook.add(imageframe, text="Изображения")
+
+    textlabel = Label(textframe, text = "Надо короче построить ээээ огромный код")
+    textlabel.grid()
+
+    imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
+    imagetable.grid(sticky=NSEW)
+    imagetable.heading("image", text="Изображение")
+    imagetable.heading("date", text="Дата создания")
 
     root.mainloop()
 
