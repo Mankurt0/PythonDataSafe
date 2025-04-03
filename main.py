@@ -92,13 +92,18 @@ def opensignin():
         entlogin = login_entry.get()
         entpassword = password_entry.get()
         cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
-        hashedpassword = cursor.fetchall()[0][0]
-        if checkhash(entpassword, hashedpassword):
-            print("Правильный пароль") #ВХОД
-            window.destroy()
-        else:
-            print("Неверный пароль")
-            password_entry.delete(0, END)
+        try:
+            hashedpassword = cursor.fetchall()[0][0]
+            if checkhash(entpassword, hashedpassword):
+                print("Правильный пароль") #ВХОД
+                window.destroy()
+                global currentuser
+                currentuser = entlogin
+            else:
+                print("Неверный пароль")
+                password_entry.delete(0, END)
+        except IndexError:
+            print("Неверный логин")
     window = Toplevel()
     window.title('Вход')
     window.geometry("400x100")
