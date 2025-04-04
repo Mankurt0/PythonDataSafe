@@ -144,8 +144,11 @@ def opensignup():
         global entpassword
         entlogin = login_entry.get()
         entpassword = password_entry.get()
-        adduser(entlogin, entpassword)
-        window.destroy()
+        try:
+            adduser(entlogin, entpassword)
+            window.destroy()
+        except sqlite3.IntegrityError:
+            print("Такой логин уже существует")
     window = Toplevel()
     window.title('Регистрация')
     window.geometry("400x100")
