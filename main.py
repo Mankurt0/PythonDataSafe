@@ -50,15 +50,11 @@ VALUES (?, ?, ?);
     connection.commit()
 
 def getnotes(user):
-    cursor.execute("""
-SELECT text,  date FROM notes
-""")
+    cursor.execute("SELECT text,  date FROM notes")
     return cursor.fetchall()
 
 def getimages(user):
-    cursor.execute("""
-SELECT image,  date FROM images
-""")
+    cursor.execute("SELECT image,  date FROM images")
     return cursor.fetchall()
 
 
@@ -93,14 +89,19 @@ def openmain():
     notebook.add(textframe, text="Текст")
     notebook.add(imageframe, text="Изображения")
 
-    textlabel = Label(textframe, text = "Надо короче построить ээээ огромный код")
-    textlabel.grid()
+    texttable = ttk.Treeview(textframe,columns=("text", "date"), show="headings")
+    texttable.grid(sticky=NSEW)
+    texttable.heading("text", text="Текст")
+    texttable.heading("date", text="Дата создания")
+    for row in getnotes("123"):
+        texttable.insert("", END, values=row)
 
     imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
     imagetable.grid(sticky=NSEW)
     imagetable.heading("image", text="Изображение")
     imagetable.heading("date", text="Дата создания")
-
+    for row in getimages("123"):
+        imagetable.insert("", END, values=row)
     root.mainloop()
 
 def opensignin():
