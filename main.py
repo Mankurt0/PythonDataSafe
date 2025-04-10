@@ -49,6 +49,18 @@ VALUES (?, ?, ?);
 """, (user, image, date.today()))
     connection.commit()
 
+def getnotes(user):
+    cursor.execute("""
+SELECT text,  date FROM notes
+""")
+    return cursor.fetchall()
+
+def getimages(user):
+    cursor.execute("""
+SELECT image,  date FROM images
+""")
+    return cursor.fetchall()
+
 
 
 def openmain():
