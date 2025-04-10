@@ -50,17 +50,18 @@ VALUES (?, ?, ?);
     connection.commit()
 
 def getnotes(user):
-    cursor.execute("SELECT text,  date FROM notes")
+    cursor.execute("SELECT text,  date FROM notes WHERE owner = ?", (user,))
     return cursor.fetchall()
 
 def getimages(user):
-    cursor.execute("SELECT image,  date FROM images")
+    cursor.execute("SELECT image,  date FROM images WHERE owner = ?", (user,))
     return cursor.fetchall()
 
 
 
 def openmain():
     """Открыть главное окно"""
+    currentuser = "testuser"
     root = Tk()
     root.title('Data safe')
     root.geometry("600x500")
@@ -93,14 +94,14 @@ def openmain():
     texttable.grid(sticky=NSEW)
     texttable.heading("text", text="Текст")
     texttable.heading("date", text="Дата создания")
-    for row in getnotes("123"):
+    for row in getnotes(currentuser):
         texttable.insert("", END, values=row)
 
     imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
     imagetable.grid(sticky=NSEW)
     imagetable.heading("image", text="Изображение")
     imagetable.heading("date", text="Дата создания")
-    for row in getimages("123"):
+    for row in getimages(currentuser):
         imagetable.insert("", END, values=row)
     root.mainloop()
 
