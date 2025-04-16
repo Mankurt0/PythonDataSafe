@@ -201,9 +201,7 @@ auth_menu.add_command(label="Выйти")
 
 root.config(menu=main_menu)
 
-mainframe = Frame(root)
-mainframe.pack()
-notebook = ttk.Notebook(mainframe)
+notebook = ttk.Notebook()
 notebook.grid(row = 0, column = 0, sticky=NSEW)
 textframe = ttk.Frame(notebook)
 imageframe = ttk.Frame(notebook)
