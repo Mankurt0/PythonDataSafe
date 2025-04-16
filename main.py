@@ -68,6 +68,91 @@ def openmain():
         imagetable.delete(*imagetable.get_children())
         for row in getimages(currentuser):
             imagetable.insert("", END, values=row)
+    def opensignin():
+        """Открыть окно выхода"""
+        def getinfo():
+            global entlogin
+            global entpassword
+            entlogin = login_entry.get()
+            entpassword = password_entry.get()
+            cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
+            try:
+                hashedpassword = cursor.fetchall()[0][0]
+                if checkhash(entpassword, hashedpassword):
+                    print("Правильный пароль") #ВХОД
+                    window.destroy()
+                    global currentuser
+                    currentuser = entlogin
+                    updateuser()
+                else:
+                    print("Неверный пароль")
+                    password_entry.delete(0, END)
+            except IndexError:
+                print("Неверный логин")
+        window = Toplevel()
+        window.title('Вход')
+        window.geometry("400x100")
+        window.minsize(400, 100)
+        window.resizable(True, False)
+        window.columnconfigure(index=0, weight=0)
+        window.columnconfigure(index=1, weight=1)
+        window.columnconfigure(index=2, weight=0)
+        window.rowconfigure(index=0, weight=1)
+        window.rowconfigure(index=1, weight=1)
+
+        login_label = Label(window, text = 'Логин:')
+        login_label.grid(row = 0, column = 0)
+
+        password_label = Label(window, text = 'Пароль:')
+        password_label.grid(row = 1, column = 0)
+
+        login_entry = Entry(window)
+        login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
+
+        password_entry = Entry(window)
+        password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
+
+        login_button = Button(window, text = 'Войти', command=getinfo)
+        login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=30, sticky=NSEW)
+    
+    def opensignup():
+        """Открыть окно регистрации"""
+        def getinfo():
+            global entlogin
+            global entpassword
+            entlogin = login_entry.get()
+            entpassword = password_entry.get()
+            try:
+                adduser(entlogin, entpassword)
+                window.destroy()
+            except sqlite3.IntegrityError:
+                print("Такой логин уже существует")
+        window = Toplevel()
+        window.title('Регистрация')
+        window.geometry("400x100")
+        window.minsize(400, 100)
+        window.resizable(True, False)
+        window.columnconfigure(index=0, weight=0)
+        window.columnconfigure(index=1, weight=1)
+        window.columnconfigure(index=2, weight=0)
+        window.rowconfigure(index=0, weight=1)
+        window.rowconfigure(index=1, weight=1)
+
+        login_label = Label(window, text = 'Логин:')
+        login_label.grid(row = 0, column = 0)
+
+        password_label = Label(window, text = 'Пароль:')
+        password_label.grid(row = 1, column = 0)
+
+        login_entry = Entry(window)
+        login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
+
+        password_entry = Entry(window)
+        password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
+
+        login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
+        login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
+    
     root = Tk()
     root.title('Data safe')
     root.geometry("600x500")
@@ -108,89 +193,9 @@ def openmain():
     updatebtn.grid()
     root.mainloop()
 
-def opensignin():
-    """Открыть окно выхода"""
-    def getinfo():
-        global entlogin
-        global entpassword
-        entlogin = login_entry.get()
-        entpassword = password_entry.get()
-        cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
-        try:
-            hashedpassword = cursor.fetchall()[0][0]
-            if checkhash(entpassword, hashedpassword):
-                print("Правильный пароль") #ВХОД
-                window.destroy()
-                global currentuser
-                currentuser = entlogin
-            else:
-                print("Неверный пароль")
-                password_entry.delete(0, END)
-        except IndexError:
-            print("Неверный логин")
-    window = Toplevel()
-    window.title('Вход')
-    window.geometry("400x100")
-    window.minsize(400, 100)
-    window.resizable(True, False)
-    window.columnconfigure(index=0, weight=0)
-    window.columnconfigure(index=1, weight=1)
-    window.columnconfigure(index=2, weight=0)
-    window.rowconfigure(index=0, weight=1)
-    window.rowconfigure(index=1, weight=1)
 
-    login_label = Label(window, text = 'Логин:')
-    login_label.grid(row = 0, column = 0)
 
-    password_label = Label(window, text = 'Пароль:')
-    password_label.grid(row = 1, column = 0)
 
-    login_entry = Entry(window)
-    login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
-
-    password_entry = Entry(window)
-    password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
-
-    login_button = Button(window, text = 'Войти', command=getinfo)
-    login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=30, sticky=NSEW)
-
-def opensignup():
-    """Открыть окно регистрации"""
-    def getinfo():
-        global entlogin
-        global entpassword
-        entlogin = login_entry.get()
-        entpassword = password_entry.get()
-        try:
-            adduser(entlogin, entpassword)
-            window.destroy()
-        except sqlite3.IntegrityError:
-            print("Такой логин уже существует")
-    window = Toplevel()
-    window.title('Регистрация')
-    window.geometry("400x100")
-    window.minsize(400, 100)
-    window.resizable(True, False)
-    window.columnconfigure(index=0, weight=0)
-    window.columnconfigure(index=1, weight=1)
-    window.columnconfigure(index=2, weight=0)
-    window.rowconfigure(index=0, weight=1)
-    window.rowconfigure(index=1, weight=1)
-
-    login_label = Label(window, text = 'Логин:')
-    login_label.grid(row = 0, column = 0)
-
-    password_label = Label(window, text = 'Пароль:')
-    password_label.grid(row = 1, column = 0)
-
-    login_entry = Entry(window)
-    login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
-
-    password_entry = Entry(window)
-    password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
-
-    login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
-    login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
 
 
