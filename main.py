@@ -61,14 +61,18 @@ def getimages(user):
 
 def openmain():
     """Открыть главное окно"""
-    currentuser = "testuser"
+    def updateuser():
+        texttable.delete(*texttable.get_children())
+        for row in getnotes(currentuser):
+            texttable.insert("", END, values=row)
+        imagetable.delete(*imagetable.get_children())
+        for row in getimages(currentuser):
+            imagetable.insert("", END, values=row)
     root = Tk()
     root.title('Data safe')
     root.geometry("600x500")
     root.minsize(600, 500)
     root.iconbitmap(default="icon.ico")
-    """ root.rowconfigure(index=1, weight=1)
-    root.columnconfigure(index=1, weight=1) """
 
     main_menu = Menu()
     auth_menu = Menu(tearoff=0)
@@ -94,15 +98,14 @@ def openmain():
     texttable.grid(sticky=NSEW)
     texttable.heading("text", text="Текст")
     texttable.heading("date", text="Дата создания")
-    for row in getnotes(currentuser):
-        texttable.insert("", END, values=row)
+    
 
     imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
     imagetable.grid(sticky=NSEW)
     imagetable.heading("image", text="Изображение")
     imagetable.heading("date", text="Дата создания")
-    for row in getimages(currentuser):
-        imagetable.insert("", END, values=row)
+    updatebtn = Button(command=updateuser)
+    updatebtn.grid()
     root.mainloop()
 
 def opensignin():
@@ -226,6 +229,7 @@ CREATE TABLE IF NOT EXISTS "images" (
 );
 """)
 
+currentuser = "testuser"
 openmain()
 
 connection.close()
