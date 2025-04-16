@@ -201,7 +201,9 @@ auth_menu.add_command(label="Выйти")
 
 root.config(menu=main_menu)
 
-notebook = ttk.Notebook()
+mainframe = Frame(root)
+mainframe.pack()
+notebook = ttk.Notebook(mainframe)
 notebook.grid(row = 0, column = 0, sticky=NSEW)
 textframe = ttk.Frame(notebook)
 imageframe = ttk.Frame(notebook)
@@ -220,8 +222,8 @@ imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
 imagetable.grid(sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
-updatebtn = Button(command=updateuser)
-updatebtn.grid()
+updatebtn = Button(command=updateuser, text="Обновить")
+updatebtn.grid(sticky=NSEW)
 root.mainloop()
 
 
