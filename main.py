@@ -19,8 +19,6 @@ def checkhash(password, hashedpassword) -> bool:
     else:
         return False
 
-
-
 def adduser(login: str, password: str):
     """Добавление пользователя в таблицу users"""
     hpassword = hashpass(password)
@@ -57,147 +55,98 @@ def getimages(user):
     cursor.execute("SELECT image,  date FROM images WHERE owner = ?", (user,))
     return cursor.fetchall()
 
+def updateuser():
+    texttable.delete(*texttable.get_children())
+    for row in getnotes(currentuser):
+        texttable.insert("", END, values=row)
+    imagetable.delete(*imagetable.get_children())
+    for row in getimages(currentuser):
+        imagetable.insert("", END, values=row)
 
-
-def openmain():
-    """Открыть главное окно"""
-    def updateuser():
-        texttable.delete(*texttable.get_children())
-        for row in getnotes(currentuser):
-            texttable.insert("", END, values=row)
-        imagetable.delete(*imagetable.get_children())
-        for row in getimages(currentuser):
-            imagetable.insert("", END, values=row)
-    def opensignin():
-        """Открыть окно выхода"""
-        def getinfo():
-            global entlogin
-            global entpassword
-            entlogin = login_entry.get()
-            entpassword = password_entry.get()
-            cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
-            try:
-                hashedpassword = cursor.fetchall()[0][0]
-                if checkhash(entpassword, hashedpassword):
-                    print("Правильный пароль") #ВХОД
-                    window.destroy()
-                    global currentuser
-                    currentuser = entlogin
-                    updateuser()
-                else:
-                    print("Неверный пароль")
-                    password_entry.delete(0, END)
-            except IndexError:
-                print("Неверный логин")
-        window = Toplevel()
-        window.title('Вход')
-        window.geometry("400x100")
-        window.minsize(400, 100)
-        window.resizable(True, False)
-        window.columnconfigure(index=0, weight=0)
-        window.columnconfigure(index=1, weight=1)
-        window.columnconfigure(index=2, weight=0)
-        window.rowconfigure(index=0, weight=1)
-        window.rowconfigure(index=1, weight=1)
-
-        login_label = Label(window, text = 'Логин:')
-        login_label.grid(row = 0, column = 0)
-
-        password_label = Label(window, text = 'Пароль:')
-        password_label.grid(row = 1, column = 0)
-
-        login_entry = Entry(window)
-        login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
-
-        password_entry = Entry(window)
-        password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
-
-        login_button = Button(window, text = 'Войти', command=getinfo)
-        login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=30, sticky=NSEW)
-    
-    def opensignup():
-        """Открыть окно регистрации"""
-        def getinfo():
-            global entlogin
-            global entpassword
-            entlogin = login_entry.get()
-            entpassword = password_entry.get()
-            try:
-                adduser(entlogin, entpassword)
+def opensignin():
+    """Открыть окно выхода"""
+    def getinfo():
+        global entlogin
+        global entpassword
+        entlogin = login_entry.get()
+        entpassword = password_entry.get()
+        cursor.execute("SELECT password FROM users WHERE username = ?", (entlogin,))
+        try:
+            hashedpassword = cursor.fetchall()[0][0]
+            if checkhash(entpassword, hashedpassword):
+                print("Правильный пароль") #ВХОД
                 window.destroy()
-            except sqlite3.IntegrityError:
-                print("Такой логин уже существует")
-        window = Toplevel()
-        window.title('Регистрация')
-        window.geometry("400x100")
-        window.minsize(400, 100)
-        window.resizable(True, False)
-        window.columnconfigure(index=0, weight=0)
-        window.columnconfigure(index=1, weight=1)
-        window.columnconfigure(index=2, weight=0)
-        window.rowconfigure(index=0, weight=1)
-        window.rowconfigure(index=1, weight=1)
+                global currentuser
+                currentuser = entlogin
+                updateuser()
+            else:
+                print("Неверный пароль")
+                password_entry.delete(0, END)
+        except IndexError:
+            print("Неверный логин")
+    window = Toplevel()
+    window.title('Вход')
+    window.geometry("400x100")
+    window.minsize(400, 100)
+    window.resizable(True, False)
+    window.columnconfigure(index=0, weight=0)
+    window.columnconfigure(index=1, weight=1)
+    window.columnconfigure(index=2, weight=0)
+    window.rowconfigure(index=0, weight=1)
+    window.rowconfigure(index=1, weight=1)
 
-        login_label = Label(window, text = 'Логин:')
-        login_label.grid(row = 0, column = 0)
+    login_label = Label(window, text = 'Логин:')
+    login_label.grid(row = 0, column = 0)
 
-        password_label = Label(window, text = 'Пароль:')
-        password_label.grid(row = 1, column = 0)
+    password_label = Label(window, text = 'Пароль:')
+    password_label.grid(row = 1, column = 0)
 
-        login_entry = Entry(window)
-        login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
+    login_entry = Entry(window)
+    login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
 
-        password_entry = Entry(window)
-        password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
+    password_entry = Entry(window)
+    password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
 
-        login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
-        login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
-    
-    root = Tk()
-    root.title('Data safe')
-    root.geometry("600x500")
-    root.minsize(600, 500)
-    root.iconbitmap(default="icon.ico")
+    login_button = Button(window, text = 'Войти', command=getinfo)
+    login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=30, sticky=NSEW)
 
-    main_menu = Menu()
-    auth_menu = Menu(tearoff=0)
+def opensignup():
+    """Открыть окно регистрации"""
+    def getinfo():
+        global entlogin
+        global entpassword
+        entlogin = login_entry.get()
+        entpassword = password_entry.get()
+        try:
+            adduser(entlogin, entpassword)
+            window.destroy()
+        except sqlite3.IntegrityError:
+            print("Такой логин уже существует")
+    window = Toplevel()
+    window.title('Регистрация')
+    window.geometry("400x100")
+    window.minsize(400, 100)
+    window.resizable(True, False)
+    window.columnconfigure(index=0, weight=0)
+    window.columnconfigure(index=1, weight=1)
+    window.columnconfigure(index=2, weight=0)
+    window.rowconfigure(index=0, weight=1)
+    window.rowconfigure(index=1, weight=1)
 
-    main_menu.add_cascade(label="Аутентификация", menu=auth_menu)
-    auth_menu.add_command(label="Войти", command=opensignin)
-    auth_menu.add_command(label="Зарегистрироваться", command=opensignup)
-    auth_menu.add_separator()
-    auth_menu.add_command(label="Выйти")
+    login_label = Label(window, text = 'Логин:')
+    login_label.grid(row = 0, column = 0)
 
-    root.config(menu=main_menu)
+    password_label = Label(window, text = 'Пароль:')
+    password_label.grid(row = 1, column = 0)
 
-    notebook = ttk.Notebook()
-    notebook.grid(row = 0, column = 0, sticky=NSEW)
-    textframe = ttk.Frame(notebook)
-    imageframe = ttk.Frame(notebook)
-    textframe.grid(row = 0, column = 0, sticky=NSEW)
-    imageframe.grid(row = 0, column = 0, sticky=NSEW)
-    notebook.add(textframe, text="Текст")
-    notebook.add(imageframe, text="Изображения")
+    login_entry = Entry(window)
+    login_entry.grid(row = 0, column = 1, padx=10, pady=10, sticky=EW)
 
-    texttable = ttk.Treeview(textframe,columns=("text", "date"), show="headings")
-    texttable.grid(sticky=NSEW)
-    texttable.heading("text", text="Текст")
-    texttable.heading("date", text="Дата создания")
-    
+    password_entry = Entry(window)
+    password_entry.grid(row = 1, column = 1, padx=10, pady=10, sticky=EW)
 
-    imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
-    imagetable.grid(sticky=NSEW)
-    imagetable.heading("image", text="Изображение")
-    imagetable.heading("date", text="Дата создания")
-    updatebtn = Button(command=updateuser)
-    updatebtn.grid()
-    root.mainloop()
-
-
-
-
-
-
+    login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
+    login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -235,6 +184,46 @@ CREATE TABLE IF NOT EXISTS "images" (
 """)
 
 currentuser = "testuser"
-openmain()
+root = Tk()
+root.title('Data safe')
+root.geometry("600x500")
+root.minsize(600, 500)
+root.iconbitmap(default="icon.ico")
+
+main_menu = Menu()
+auth_menu = Menu(tearoff=0)
+
+main_menu.add_cascade(label="Аутентификация", menu=auth_menu)
+auth_menu.add_command(label="Войти", command=opensignin)
+auth_menu.add_command(label="Зарегистрироваться", command=opensignup)
+auth_menu.add_separator()
+auth_menu.add_command(label="Выйти")
+
+root.config(menu=main_menu)
+
+notebook = ttk.Notebook()
+notebook.grid(row = 0, column = 0, sticky=NSEW)
+textframe = ttk.Frame(notebook)
+imageframe = ttk.Frame(notebook)
+textframe.grid(row = 0, column = 0, sticky=NSEW)
+imageframe.grid(row = 0, column = 0, sticky=NSEW)
+notebook.add(textframe, text="Текст")
+notebook.add(imageframe, text="Изображения")
+
+texttable = ttk.Treeview(textframe,columns=("text", "date"), show="headings")
+texttable.grid(sticky=NSEW)
+texttable.heading("text", text="Текст")
+texttable.heading("date", text="Дата создания")
+
+
+imagetable = ttk.Treeview(imageframe,columns=("image", "date"), show="headings")
+imagetable.grid(sticky=NSEW)
+imagetable.heading("image", text="Изображение")
+imagetable.heading("date", text="Дата создания")
+updatebtn = Button(command=updateuser)
+updatebtn.grid()
+root.mainloop()
+
+
 
 connection.close()
