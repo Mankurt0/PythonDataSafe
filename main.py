@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from cryptography.fernet import Fernet
 import bcrypt
-
+""" шифрование дешифрование изображения """
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
     encpassword = password.encode()
@@ -189,6 +189,9 @@ root.title('Data safe')
 root.geometry("600x500")
 root.minsize(600, 500)
 root.iconbitmap(default="icon.ico")
+root.grid_columnconfigure(index=0, weight=1)
+root.grid_rowconfigure(index=0, weight=1)
+root.grid_rowconfigure(index=1, weight=0)
 
 main_menu = Menu()
 auth_menu = Menu(tearoff=0)
@@ -205,8 +208,6 @@ notebook = ttk.Notebook()
 notebook.grid(row = 0, column = 0, sticky=NSEW)
 textframe = ttk.Frame(notebook)
 imageframe = ttk.Frame(notebook)
-textframe.grid(row = 0, column = 0, sticky=NSEW)
-imageframe.grid(row = 0, column = 0, sticky=NSEW)
 notebook.add(textframe, text="Текст")
 notebook.add(imageframe, text="Изображения")
 
@@ -221,9 +222,7 @@ imagetable.grid(sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
 updatebtn = Button(command=updateuser, text="Обновить")
-updatebtn.grid(sticky=NSEW)
+updatebtn.grid(row= 1, column=0, sticky=NSEW)
+
 root.mainloop()
-
-
-
 connection.close()
