@@ -154,6 +154,23 @@ def opensignup():
     login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
     login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
+def openaddnote():
+    
+    window = Toplevel()
+    window.title("Добавление записи")
+    #window.geometry()
+    #window.minsize()
+    #window.resizable()
+
+    textentry = Entry(window)
+    textentry.grid()
+
+    addnotebtn = Button(window, text="Добавить запись")
+    addnotebtn.grid()
+
+def openaddimage():
+    window = Toplevel()
+
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
 #Создание таблицы users
@@ -237,14 +254,14 @@ imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
 
 
-addtextbtn = Button(texttab, text="Добавить")
+addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
 addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 deltextbtn = Button(texttab, text="Удалить")
 deltextbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
 updatetextbtn = Button(texttab, command=updateuser, text="Обновить")
 updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
-addimagebtn = Button(imagetab, text="Добавить")
+addimagebtn = Button(imagetab, text="Добавить", command=openaddimage)
 addimagebtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 delimagebtn = Button(imagetab, text="Удалить")
 delimagebtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
