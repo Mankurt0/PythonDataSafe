@@ -10,6 +10,7 @@ from tkinter import *
 from tkinter import ttk
 from cryptography.fernet import Fernet
 import bcrypt
+
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
     encpassword = password.encode()
@@ -195,20 +196,15 @@ root.geometry("600x500")
 root.minsize(600, 500)
 root.iconbitmap(default="icon.ico")
 root.grid_columnconfigure(index=0, weight=1)
-root.grid_columnconfigure(index=1, weight=1)
-root.grid_columnconfigure(index=2, weight=1)
 root.grid_rowconfigure(index=0, weight=1)
-root.grid_rowconfigure(index=1, weight=0)
 
 main_menu = Menu()
 auth_menu = Menu(tearoff=0)
-
 main_menu.add_cascade(label="Аутентификация", menu=auth_menu)
 auth_menu.add_command(label="Войти", command=opensignin)
 auth_menu.add_command(label="Зарегистрироваться", command=opensignup)
 auth_menu.add_separator()
 auth_menu.add_command(label="Выйти")
-
 root.config(menu=main_menu)
 
 notebook = ttk.Notebook()
@@ -217,31 +213,43 @@ texttab = ttk.Frame(notebook)
 imagetab = ttk.Frame(notebook)
 notebook.add(texttab, text="Текст")
 notebook.add(imagetab, text="Изображения")
+
 texttab.grid_columnconfigure(index=0, weight=1)
+texttab.grid_columnconfigure(index=1, weight=1)
+texttab.grid_columnconfigure(index=2, weight=1)
 texttab.grid_rowconfigure(index=0, weight=1)
+texttab.grid_rowconfigure(index=1, weight=0)
+
 imagetab.grid_columnconfigure(index=0, weight=1)
+imagetab.grid_columnconfigure(index=1, weight=1)
+imagetab.grid_columnconfigure(index=2, weight=1)
 imagetab.grid_rowconfigure(index=0, weight=1)
+imagetab.grid_rowconfigure(index=1, weight=0)
 
 texttable = ttk.Treeview(texttab,columns=("text", "date"), show="headings")
-texttable.grid(sticky=NSEW)
+texttable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
 texttable.heading("text", text="Текст")
 texttable.heading("date", text="Дата создания")
 
-
 imagetable = ttk.Treeview(imagetab,columns=("image", "date"), show="headings")
-imagetable.grid(sticky=NSEW)
+imagetable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
 
 
-addbtn = Button(text="Добавить")
-addbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+addtextbtn = Button(texttab, text="Добавить")
+addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+deltextbtn = Button(texttab, text="Удалить")
+deltextbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
+updatetextbtn = Button(texttab, command=updateuser, text="Обновить")
+updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
-delbtn = Button(text="Удалить")
-delbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
-
-updatebtn = Button(command=updateuser, text="Обновить")
-updatebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
+addimagebtn = Button(imagetab, text="Добавить")
+addimagebtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+delimagebtn = Button(imagetab, text="Удалить")
+delimagebtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
+updateimagebtn = Button(imagetab, command=updateuser, text="Обновить")
+updateimagebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
 root.mainloop()
 connection.close()
