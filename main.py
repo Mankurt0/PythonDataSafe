@@ -43,7 +43,7 @@ INSERT INTO "main"."notes"
 VALUES (?, ?, ?);
 """, (user, text, date.today()))
     connection.commit()
-    updateuser()
+    update()
 
 def addimage(user, image):
     """Добавление изображения в таблицу images без шифрования"""
@@ -53,7 +53,7 @@ INSERT INTO "main"."images"
 VALUES (?, ?, ?);
 """, (user, image, date.today()))
     connection.commit()
-    updateuser()
+    update()
 
 def getnotes(user):
     cursor.execute("SELECT text,  date FROM notes WHERE owner = ?", (user,))
@@ -63,7 +63,7 @@ def getimages(user):
     cursor.execute("SELECT image,  date FROM images WHERE owner = ?", (user,))
     return cursor.fetchall()
 
-def updateuser():
+def update():
     texttable.delete(*texttable.get_children())
     for row in getnotes(currentuser):
         texttable.insert("", END, values=row)
@@ -86,7 +86,7 @@ def opensignin():
                 window.destroy()
                 global currentuser
                 currentuser = entlogin
-                updateuser()
+                update()
             else:
                 print("Неверный пароль")
                 password_entry.delete(0, END)
@@ -260,14 +260,14 @@ addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
 addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 deltextbtn = Button(texttab, text="Удалить")
 deltextbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
-updatetextbtn = Button(texttab, command=updateuser, text="Обновить")
+updatetextbtn = Button(texttab, command=update, text="Обновить")
 updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
 addimagebtn = Button(imagetab, text="Добавить", command=openaddimage)
 addimagebtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 delimagebtn = Button(imagetab, text="Удалить")
 delimagebtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
-updateimagebtn = Button(imagetab, command=updateuser, text="Обновить")
+updateimagebtn = Button(imagetab, command=update, text="Обновить")
 updateimagebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
 root.mainloop()
