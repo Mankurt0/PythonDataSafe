@@ -156,23 +156,34 @@ def opensignup():
     login_button = Button(window, text = 'Создать аккаунт', command=getinfo)
     login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
+def signout():
+    global currentuser
+    currentuser = "testuser"
+    update()
+
 def openaddnote():
-    window = Toplevel()
-    window.title("Добавление записи")
-    window.geometry("300x80")
-    window.minsize(300, 80)
-    window.columnconfigure(0, weight=1)
-    window.rowconfigure(0, weight=1)
-    window.resizable(True, False)
+    if currentuser == "testuser":
+        print("ВОЙДИ")
+    else:
+        window = Toplevel()
+        window.title("Добавление записи")
+        window.geometry("300x80")
+        window.minsize(300, 80)
+        window.columnconfigure(0, weight=1)
+        window.rowconfigure(0, weight=1)
+        window.resizable(True, False)
 
-    textentry = Entry(window)
-    textentry.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
+        textentry = Entry(window)
+        textentry.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
 
-    addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
-    addnotebtn.grid(column=0, row=1, sticky=NSEW, padx=10, pady=10)
+        addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
+        addnotebtn.grid(column=0, row=1, sticky=NSEW, padx=10, pady=10)
 
 def openaddimage():
-    window = Toplevel()
+    if currentuser == "testuser":
+        print("ВОЙДИ")
+    else:
+        window = Toplevel()
 
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -224,7 +235,7 @@ main_menu.add_cascade(label="Аутентификация", menu=auth_menu)
 auth_menu.add_command(label="Войти", command=opensignin)
 auth_menu.add_command(label="Зарегистрироваться", command=opensignup)
 auth_menu.add_separator()
-auth_menu.add_command(label="Выйти")
+auth_menu.add_command(label="Выйти", command=signout)
 root.config(menu=main_menu)
 
 notebook = ttk.Notebook()
