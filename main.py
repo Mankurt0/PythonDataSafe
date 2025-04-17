@@ -157,18 +157,19 @@ def opensignup():
     login_button.grid(row = 0, column = 2, rowspan=2, padx=10, pady=10, ipadx=5, sticky=NSEW)
 
 def openaddnote():
-    
     window = Toplevel()
     window.title("Добавление записи")
-    #window.geometry()
-    #window.minsize()
-    #window.resizable()
+    window.geometry("300x80")
+    window.minsize(300, 80)
+    window.columnconfigure(0, weight=1)
+    window.rowconfigure(0, weight=1)
+    window.resizable(True, False)
 
     textentry = Entry(window)
-    textentry.grid()
+    textentry.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
 
     addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
-    addnotebtn.grid()
+    addnotebtn.grid(column=0, row=1, sticky=NSEW, padx=10, pady=10)
 
 def openaddimage():
     window = Toplevel()
