@@ -190,6 +190,8 @@ root.geometry("600x500")
 root.minsize(600, 500)
 root.iconbitmap(default="icon.ico")
 root.grid_columnconfigure(index=0, weight=1)
+root.grid_columnconfigure(index=1, weight=1)
+root.grid_columnconfigure(index=2, weight=1)
 root.grid_rowconfigure(index=0, weight=1)
 root.grid_rowconfigure(index=1, weight=0)
 
@@ -205,7 +207,7 @@ auth_menu.add_command(label="Выйти")
 root.config(menu=main_menu)
 
 notebook = ttk.Notebook()
-notebook.grid(row = 0, column = 0, sticky=NSEW)
+notebook.grid(row = 0, column = 0,columnspan=3, sticky=NSEW)
 texttab = ttk.Frame(notebook)
 imagetab = ttk.Frame(notebook)
 notebook.add(texttab, text="Текст")
@@ -225,8 +227,16 @@ imagetable = ttk.Treeview(imagetab,columns=("image", "date"), show="headings")
 imagetable.grid(sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
+
+
+addbtn = Button(text="Добавить")
+addbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+
+delbtn = Button(text="Удалить")
+delbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
+
 updatebtn = Button(command=updateuser, text="Обновить")
-updatebtn.grid(row= 1, column=0,padx=10, pady=10, sticky=NSEW)
+updatebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
 root.mainloop()
 connection.close()
