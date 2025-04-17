@@ -1,10 +1,15 @@
+""" 
+Создание ноутбука в отдельную функцию?
+Функции добавления удаления
+Шифрование
+Просмотр изображений
+"""
 import sqlite3
 from datetime import date
 from tkinter import *
 from tkinter import ttk
 from cryptography.fernet import Fernet
 import bcrypt
-""" шифрование дешифрование изображения """
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
     encpassword = password.encode()
