@@ -43,6 +43,7 @@ INSERT INTO "main"."notes"
 VALUES (?, ?, ?);
 """, (user, text, date.today()))
     connection.commit()
+    updateuser()
 
 def addimage(user, image):
     """Добавление изображения в таблицу images без шифрования"""
@@ -52,6 +53,7 @@ INSERT INTO "main"."images"
 VALUES (?, ?, ?);
 """, (user, image, date.today()))
     connection.commit()
+    updateuser()
 
 def getnotes(user):
     cursor.execute("SELECT text,  date FROM notes WHERE owner = ?", (user,))
@@ -165,7 +167,7 @@ def openaddnote():
     textentry = Entry(window)
     textentry.grid()
 
-    addnotebtn = Button(window, text="Добавить запись")
+    addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
     addnotebtn.grid()
 
 def openaddimage():
