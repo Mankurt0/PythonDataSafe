@@ -226,7 +226,7 @@ imagetable.grid(sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Дата создания")
 updatebtn = Button(command=updateuser, text="Обновить")
-updatebtn.grid(row= 1, column=0, sticky=NSEW)
+updatebtn.grid(row= 1, column=0,padx=10, pady=10, sticky=NSEW)
 
 root.mainloop()
 connection.close()
