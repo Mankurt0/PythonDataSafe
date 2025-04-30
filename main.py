@@ -8,8 +8,11 @@ import sqlite3
 from datetime import datetime
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
 from cryptography.fernet import Fernet
 import bcrypt
+from PIL import Image
+import io
 
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
@@ -183,7 +186,9 @@ def openaddimage():
     if currentuser == "testuser":
         print("ВОЙДИ")
     else:
-        window = Toplevel()
+        imagepath = filedialog.askopenfilename()
+        image = Image.open(imagepath)
+        image.show()
 
 def textselected(event):
     global values
