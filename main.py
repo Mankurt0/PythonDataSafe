@@ -7,8 +7,8 @@
 import sqlite3
 from datetime import datetime
 from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import ttk, filedialog
+from tkinter.messagebox import showinfo
 from cryptography.fernet import Fernet
 import bcrypt
 from PIL import Image
@@ -85,16 +85,15 @@ def opensignin():
         try:
             hashedpassword = cursor.fetchall()[0][0]
             if checkhash(entpassword, hashedpassword):
-                print("Правильный пароль") #ВХОД
                 window.destroy()
                 global currentuser
                 currentuser = entlogin
                 update()
             else:
-                print("Неверный пароль")
+                showinfo(message="Неверный пароль")
                 password_entry.delete(0, END)
         except IndexError:
-            print("Неверный логин")
+            showinfo(message="Неверный логин")
     window = Toplevel()
     window.title('Вход')
     window.geometry("400x100")
@@ -132,7 +131,7 @@ def opensignup():
             adduser(entlogin, entpassword)
             window.destroy()
         except sqlite3.IntegrityError:
-            print("Такой логин уже существует")
+            showinfo(message="Такой логин уже существует")
     window = Toplevel()
     window.title('Регистрация')
     window.geometry("400x100")
@@ -166,7 +165,7 @@ def signout():
 
 def openaddnote():
     if currentuser == "testuser":
-        print("ВОЙДИ")
+        showinfo(message="Выход не выполнен")
     else:
         window = Toplevel()
         window.title("Добавление записи")
@@ -184,7 +183,7 @@ def openaddnote():
 
 def openaddimage():
     if currentuser == "testuser":
-        print("ВОЙДИ")
+        showinfo(message="Выход не выполнен")
     else:
         imagepath = filedialog.askopenfilename()
         image = Image.open(imagepath)
