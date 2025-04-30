@@ -5,7 +5,7 @@
 Просмотр изображений
 """
 import sqlite3
-from datetime import date
+from datetime import datetime
 from tkinter import *
 from tkinter import ttk
 from cryptography.fernet import Fernet
@@ -41,7 +41,7 @@ def addnote(user, text):
 INSERT INTO "main"."notes"
 ("owner", "text", "date")
 VALUES (?, ?, ?);
-""", (user, text, date.today()))
+""", (user, text, datetime.now()))
     connection.commit()
     update()
 
@@ -51,7 +51,7 @@ def addimage(user, image):
 INSERT INTO "main"."images"
 ("owner", "image", "date")
 VALUES (?, ?, ?);
-""", (user, image, date.today()))
+""", (user, image, datetime.now()))
     connection.commit()
     update()
 
@@ -185,6 +185,20 @@ def openaddimage():
     else:
         window = Toplevel()
 
+def textselected(event):
+    global values
+    values = []
+    for selected_item in texttable.selection():
+        item = texttable.item(selected_item)
+        values = item["values"]
+
+
+def deletenote():
+    cursor.execute("DELETE FROM notes WHERE owner = ? AND text = ? AND date = ?", (currentuser, values[0], values[1]))
+    connection.commit()
+    update()
+
+
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
 #Создание таблицы users
@@ -225,7 +239,7 @@ root = Tk()
 root.title('Data safe')
 root.geometry("600x500")
 root.minsize(600, 500)
-root.iconbitmap(default="icon.ico")
+#root.iconbitmap(default="icon.ico")
 root.grid_columnconfigure(index=0, weight=1)
 root.grid_rowconfigure(index=0, weight=1)
 
@@ -260,17 +274,18 @@ imagetab.grid_rowconfigure(index=1, weight=0)
 texttable = ttk.Treeview(texttab,columns=("text", "date"), show="headings")
 texttable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
 texttable.heading("text", text="Текст")
-texttable.heading("date", text="Дата создания")
+texttable.heading("date", text="Время создания")
+texttable.bind("<<TreeviewSelect>>", textselected)
 
 imagetable = ttk.Treeview(imagetab,columns=("image", "date"), show="headings")
 imagetable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
 imagetable.heading("image", text="Изображение")
-imagetable.heading("date", text="Дата создания")
+imagetable.heading("date", text="Время создания")
 
 
 addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
 addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
-deltextbtn = Button(texttab, text="Удалить")
+deltextbtn = Button(texttab, text="Удалить", command=deletenote)
 deltextbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
 updatetextbtn = Button(texttab, command=update, text="Обновить")
 updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
