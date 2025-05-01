@@ -1,8 +1,6 @@
 """ 
-Создание ноутбука в отдельную функцию?
-Функции добавления удаления
 Шифрование
-Просмотр изображений
+Кнопка просмотра изображений
 """
 import sqlite3
 from datetime import datetime
@@ -11,8 +9,7 @@ from tkinter import ttk, filedialog
 from tkinter.messagebox import showinfo
 from cryptography.fernet import Fernet
 import bcrypt
-from PIL import Image
-import io
+from os import path
 
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
@@ -48,13 +45,13 @@ VALUES (?, ?, ?);
     connection.commit()
     update()
 
-def addimage(user, image):
+def addimage(user, image, imagename):
     """Добавление изображения в таблицу images без шифрования"""
     cursor.execute("""
 INSERT INTO "main"."images"
-("owner", "image", "date")
-VALUES (?, ?, ?);
-""", (user, image, datetime.now()))
+("owner", "image", "date", "imagename")
+VALUES (?, ?, ?, ?);
+""", (user, image, datetime.now(), imagename))
     connection.commit()
     update()
 
@@ -63,7 +60,7 @@ def getnotes(user):
     return cursor.fetchall()
 
 def getimages(user):
-    cursor.execute("SELECT image,  date FROM images WHERE owner = ?", (user,))
+    cursor.execute("SELECT imagename,  date FROM images WHERE owner = ?", (user,))
     return cursor.fetchall()
 
 def update():
@@ -186,22 +183,34 @@ def openaddimage():
         showinfo(message="Выход не выполнен")
     else:
         imagepath = filedialog.askopenfilename()
-        image = Image.open(imagepath)
-        image.show()
+        imagename = path.basename(imagepath).split('/')[-1]
+        with open(imagepath, 'rb') as file:
+            blobData = file.read()
+        addimage(currentuser, blobData, imagename)
 
 def textselected(event):
-    global values
-    values = []
+    global textvalues
+    textvalues = []
     for selected_item in texttable.selection():
         item = texttable.item(selected_item)
-        values = item["values"]
+        textvalues = item["values"]
 
+def imageselected(event):
+    global imagevalues
+    imagevalues = []
+    for selected_item in imagetable.selection():
+        item = imagetable.item(selected_item)
+        imagevalues = item["values"]
 
 def deletenote():
-    cursor.execute("DELETE FROM notes WHERE owner = ? AND text = ? AND date = ?", (currentuser, values[0], values[1]))
+    cursor.execute("DELETE FROM notes WHERE owner = ? AND text = ? AND date = ?", (currentuser, textvalues[0], textvalues[1]))
     connection.commit()
     update()
 
+def deleteimage():
+    cursor.execute("DELETE FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
+    connection.commit()
+    update()
 
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -233,6 +242,7 @@ CREATE TABLE IF NOT EXISTS "images" (
 	"owner"	TEXT NOT NULL,
 	"image"	BLOB,
 	"date"	TEXT NOT NULL,
+    "imagename"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("owner") REFERENCES "users"("username")
 );
@@ -285,6 +295,8 @@ imagetable = ttk.Treeview(imagetab,columns=("image", "date"), show="headings")
 imagetable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
 imagetable.heading("image", text="Изображение")
 imagetable.heading("date", text="Время создания")
+imagetable.bind("<<TreeviewSelect>>", imageselected)
+
 
 
 addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
@@ -296,7 +308,7 @@ updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
 
 addimagebtn = Button(imagetab, text="Добавить", command=openaddimage)
 addimagebtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
-delimagebtn = Button(imagetab, text="Удалить")
+delimagebtn = Button(imagetab, text="Удалить", command=deleteimage)
 delimagebtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
 updateimagebtn = Button(imagetab, command=update, text="Обновить")
 updateimagebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
