@@ -253,7 +253,6 @@ root = Tk()
 root.title('Data safe')
 root.geometry("600x500")
 root.minsize(600, 500)
-#root.iconbitmap(default="icon.ico")
 root.grid_columnconfigure(index=0, weight=1)
 root.grid_rowconfigure(index=0, weight=1)
 
