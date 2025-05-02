@@ -9,7 +9,8 @@ from tkinter import ttk, filedialog
 from tkinter.messagebox import showinfo
 from cryptography.fernet import Fernet
 import bcrypt
-from os import path
+from PIL import Image
+from os import path, remove
 
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
@@ -188,6 +189,14 @@ def openaddimage():
             blobData = file.read()
         addimage(currentuser, blobData, imagename)
 
+def viewimage():
+    cursor.execute("SELECT image FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
+    with open("tempimage", 'wb') as file:
+        file.write(cursor.fetchall()[0][0])
+    tempimage = Image.open("tempimage")
+    tempimage.show()
+    remove("tempimage")
+
 def textselected(event):
     global textvalues
     textvalues = []
@@ -266,7 +275,7 @@ auth_menu.add_command(label="Выйти", command=signout)
 root.config(menu=main_menu)
 
 notebook = ttk.Notebook()
-notebook.grid(row = 0, column = 0,columnspan=3, sticky=NSEW)
+notebook.grid(row = 0, column = 0, sticky=NSEW)
 texttab = ttk.Frame(notebook)
 imagetab = ttk.Frame(notebook)
 notebook.add(texttab, text="Текст")
@@ -300,17 +309,17 @@ imagetable.bind("<<TreeviewSelect>>", imageselected)
 
 addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
 addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+viewtextbtn = Button(texttab, text="Открыть")
+viewtextbtn.grid(row= 1, column=1, padx=10, pady=10, sticky=NSEW)
 deltextbtn = Button(texttab, text="Удалить", command=deletenote)
-deltextbtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
-updatetextbtn = Button(texttab, command=update, text="Обновить")
-updatetextbtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
+deltextbtn.grid(row=1, column=2, padx=10, pady=10, sticky=NSEW)
 
 addimagebtn = Button(imagetab, text="Добавить", command=openaddimage)
 addimagebtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+viewimagebtn = Button(imagetab, text="Открыть", command=viewimage)
+viewimagebtn.grid(row= 1, column=1, padx=10, pady=10, sticky=NSEW)
 delimagebtn = Button(imagetab, text="Удалить", command=deleteimage)
-delimagebtn.grid(row=1, column=1, padx=10, pady=10, sticky=NSEW)
-updateimagebtn = Button(imagetab, command=update, text="Обновить")
-updateimagebtn.grid(row= 1, column=2, padx=10, pady=10, sticky=NSEW)
+delimagebtn.grid(row=1, column=2, padx=10, pady=10, sticky=NSEW)
 
 root.mainloop()
 connection.close()
