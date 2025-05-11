@@ -1,6 +1,3 @@
-""" 
-Шифрование
-"""
 import sqlite3
 import bcrypt
 from datetime import datetime
@@ -72,6 +69,7 @@ def adduser(login: str, password: str):
     connection.commit()
 def addnote(user, text):
     """Добавление записи в таблицу notes без шифрования"""
+    text = encryptdata(text.encode(), currentpassword)
     cursor.execute("""
     INSERT INTO "main"."notes"
     ("owner", "text", "date")
@@ -80,6 +78,7 @@ def addnote(user, text):
     connection.commit()
     update()
 def addimage(user, image, imagename):
+    image = encryptdata(image, currentpassword)
     """Добавление изображения в таблицу images без шифрования"""
     cursor.execute("""
     INSERT INTO "main"."images"
@@ -101,6 +100,8 @@ def update():
     """Обновление данных таблиц"""
     texttable.delete(*texttable.get_children())
     for row in getnotes(currentuser):
+        row = list(row)
+        row[0] = decryptdata(row[0], currentpassword)
         texttable.insert("", END, values=row)
     imagetable.delete(*imagetable.get_children())
     for row in getimages(currentuser):
@@ -119,7 +120,9 @@ def opensignin():
             if checkhash(entpassword, hashedpassword):
                 window.destroy()
                 global currentuser
+                global currentpassword
                 currentuser = entlogin
+                currentpassword = entpassword
                 update()
             else:
                 showinfo(message="Неверный пароль")
@@ -230,7 +233,7 @@ def viewimage():
     """Просмотр изображения"""
     cursor.execute("SELECT image FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
     with open("tempimage", 'wb') as file:
-        file.write(cursor.fetchall()[0][0])
+        file.write(decryptdata(cursor.fetchall()[0][0], currentpassword))
     tempimage = Image.open("tempimage")
     tempimage.show()
     remove("tempimage")
@@ -280,6 +283,7 @@ cursor.execute("""
     """)
 
 currentuser = "testuser"
+currentpassword = ""
 root = Tk()
 root.title('Data safe')
 root.geometry("600x500")
