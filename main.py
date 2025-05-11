@@ -8,8 +8,12 @@ from tkinter import *
 from tkinter import ttk, filedialog
 from tkinter.messagebox import showinfo
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import base64
+
 from PIL import Image
-from os import path, remove
+from os import path, remove, urandom
 
 def hashpass(password: str) -> bytes:
     """Хэширование пароля"""
@@ -23,6 +27,39 @@ def checkhash(password, hashedpassword) -> bool:
         return True
     else:
         return False
+def encryptdata(data: bytes, password: str) -> bytes:
+    """Шифрование данных с паролем"""
+    passwordb = password.encode()
+    salt = urandom(16)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(passwordb))
+    f = Fernet(key)
+
+    dataenc = f.encrypt(data)
+
+    return salt + dataenc
+def decryptdata(dataenc: bytes, password: str) -> bytes:
+    """Дешифрование данных с паролем"""
+    passwordb = password.encode()
+    salt = dataenc[:16]
+    dataenc = dataenc[16:]
+    
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(passwordb))
+    f = Fernet(key)
+    
+    return f.decrypt(dataenc)
+
 
 def adduser(login: str, password: str):
     """Добавление пользователя в таблицу users"""
