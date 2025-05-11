@@ -1,3 +1,7 @@
+"""
+Вывод текущего пользователя
+Переработка окон текстовой записи
+"""
 import sqlite3
 import bcrypt
 from datetime import datetime
