@@ -1,5 +1,4 @@
 """
-Автоматический вход
 Вывод текущего пользователя
 Переработка окон текстовой записи
 Фикс удалеия текста
@@ -166,6 +165,11 @@ def opensignup():
         try:
             adduser(entlogin, entpassword)
             window.destroy()
+            global currentuser
+            global currentpassword
+            currentuser = entlogin
+            currentpassword = entpassword
+            update()            
         except sqlite3.IntegrityError:
             showinfo(message="Такой логин уже существует")
     window = Toplevel()
