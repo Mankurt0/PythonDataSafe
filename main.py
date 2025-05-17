@@ -196,11 +196,11 @@ def opensignup():
 def signout():
     """Выход из учетной записи"""
     global currentuser
-    currentuser = "testuser"
+    currentuser = ""
     update()
 
 def openaddnote():
-    if currentuser == "testuser":
+    if currentuser == "":
         showinfo(message="Выход не выполнен")
     else:
         window = Toplevel()
@@ -216,7 +216,7 @@ def openaddnote():
         addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
         addnotebtn.grid(column=0, row=1, sticky=NSEW, padx=10, pady=10)
 def openaddimage():
-    if currentuser == "testuser":
+    if currentuser == "":
         showinfo(message="Выход не выполнен")
     else:
         imagepath = filedialog.askopenfilename()
@@ -292,7 +292,7 @@ cursor.execute("""
     );
     """)
 
-currentuser = "testuser"
+currentuser = ""
 currentpassword = ""
 root = Tk()
 root.title('Data safe')
