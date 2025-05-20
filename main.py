@@ -1,5 +1,5 @@
 """
-Переработка окон текстовой записи
+Кириллица не работает лол
 """
 import sqlite3
 import bcrypt
@@ -70,14 +70,14 @@ def adduser(login: str, password: str):
     VALUES (?, ?);
     """, (login, hpassword))
     connection.commit()
-def addnote(user, text):
+def addnote(user, textname, text):
     """Добавление записи в таблицу notes без шифрования"""
     text = encryptdata(text.encode(), currentpassword)
     cursor.execute("""
     INSERT INTO "main"."notes"
-    ("owner", "text", "date")
-    VALUES (?, ?, ?);
-    """, (user, text, datetime.now()))
+    ("owner", "textname", "text", "date")
+    VALUES (?, ?, ?, ?);
+    """, (user, textname, text, datetime.now()))
     connection.commit()
     update()
 def addimage(user, image, imagename):
@@ -93,7 +93,7 @@ def addimage(user, image, imagename):
 
 def getnotes(user):
     """Получение данных об записях для таблицы из БД"""
-    cursor.execute("SELECT text,  date FROM notes WHERE owner = ?", (user,))
+    cursor.execute("SELECT textname,  date FROM notes WHERE owner = ?", (user,))
     return cursor.fetchall()
 def getimages(user):
     """Получение данных об изображениях для таблицы из БД"""
@@ -103,8 +103,6 @@ def update():
     """Обновление данных таблиц"""
     texttable.delete(*texttable.get_children())
     for row in getnotes(currentuser):
-        row = list(row)
-        row[0] = decryptdata(row[0], currentpassword)
         texttable.insert("", END, values=row)
     imagetable.delete(*imagetable.get_children())
     for row in getimages(currentuser):
@@ -203,16 +201,18 @@ def openaddnote():
     else:
         window = Toplevel()
         window.title("Добавление записи")
-        window.geometry("300x80")
-        window.minsize(300, 80)
+        window.geometry("400x300")
+        window.minsize(400, 300)
         window.columnconfigure(0, weight=1)
-        window.rowconfigure(0, weight=1)
-        window.resizable(True, False)
+        window.rowconfigure(1, weight=1)
+        window.resizable(True, True)
 
-        textentry = Entry(window)
-        textentry.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
-        addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentry.get()))
-        addnotebtn.grid(column=0, row=1, sticky=NSEW, padx=10, pady=10)
+        textentryname = Entry(window)
+        textentryname.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
+        addnotebtn = Button(window, text="Добавить запись", command=lambda: addnote(currentuser, textentryname.get(), textentry.get("1.0", "end")))
+        textentry = Text(window, wrap="word")
+        textentry.grid(column=0, row=1, sticky=NSEW, padx=10 , pady=10)
+        addnotebtn.grid(column=0, row=2, sticky=NSEW, padx=10, pady=10)
 def openaddimage():
     if currentuser == "":
         showinfo(message="Выход не выполнен")
@@ -237,6 +237,26 @@ def imageselected(event):
     for selecteditem in imagetable.selection():
         item = imagetable.item(selecteditem)
         imagevalues = item["values"]
+def viewnote():
+    """Просмотр текста"""
+    def gettextname():
+        cursor.execute("SELECT textname FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
+        return cursor.fetchall()
+    def gettext():
+        cursor.execute("SELECT text FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
+        return decryptdata(cursor.fetchall()[0][0], currentpassword)
+    window = Toplevel()
+    window.title("Просмотр записи")
+    window.geometry("400x300")
+    window.minsize(400, 300)
+    window.columnconfigure(0, weight=1)
+    window.rowconfigure(1, weight=1)
+    window.resizable(True, True)
+
+    textname = Label(window, text=gettextname(), anchor=N)
+    textname.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
+    text = Label(window, text=gettext(), anchor=N)
+    text.grid(column=0, row=1, sticky=NSEW, padx=10 , pady=10)
 def viewimage():
     """Просмотр изображения"""
     cursor.execute("SELECT image FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
@@ -273,6 +293,7 @@ cursor.execute("""
         "owner"	TEXT NOT NULL,
         "text"	TEXT,
         "date"	TEXT NOT NULL,
+        "textname"  TEXT NOT NULL,
         PRIMARY KEY("id" AUTOINCREMENT),
         FOREIGN KEY("owner") REFERENCES "users"("username")
     );
@@ -329,7 +350,7 @@ imagetab.grid_rowconfigure(index=1, weight=0)
 
 texttable = ttk.Treeview(texttab,columns=("text", "date"), show="headings")
 texttable.grid(row=0, column=0, columnspan=3, sticky=NSEW)
-texttable.heading("text", text="Текст")
+texttable.heading("text", text="Название")
 texttable.heading("date", text="Время создания")
 texttable.bind("<<TreeviewSelect>>", textselected)
 
@@ -341,7 +362,7 @@ imagetable.bind("<<TreeviewSelect>>", imageselected)
 
 addtextbtn = Button(texttab, text="Добавить", command=openaddnote)
 addtextbtn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
-viewtextbtn = Button(texttab, text="Открыть")
+viewtextbtn = Button(texttab, text="Открыть", command=viewnote)
 viewtextbtn.grid(row= 1, column=1, padx=10, pady=10, sticky=NSEW)
 deltextbtn = Button(texttab, text="Удалить", command=deletenote)
 deltextbtn.grid(row=1, column=2, padx=10, pady=10, sticky=NSEW)
