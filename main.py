@@ -1,7 +1,5 @@
 """
-Вывод текущего пользователя
 Переработка окон текстовой записи
-Фикс удаления текста - ид записей
 """
 import sqlite3
 import bcrypt
@@ -249,7 +247,7 @@ def viewimage():
     remove("tempimage")
 def deletenote():
     """Удаление выбранной записи"""
-    cursor.execute("DELETE FROM notes WHERE owner = ? AND text = ? AND date = ?", (currentuser, textvalues[0], textvalues[1]))
+    cursor.execute("DELETE FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
     connection.commit()
     update()
 def deleteimage():
