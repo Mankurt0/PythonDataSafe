@@ -1,7 +1,3 @@
-"""
-Текст выводить в несколько строк
-Текст не открывать и удалять без входа (пикчи тоже)
-"""
 import sqlite3
 import bcrypt
 from datetime import datetime
@@ -133,6 +129,7 @@ def opensignin():
         except IndexError:
             showinfo(message="Неверный логин")
     window = Toplevel()
+    window.grab_set()
     window.title('Вход')
     window.geometry("400x100")
     window.minsize(400, 100)
@@ -171,6 +168,7 @@ def opensignup():
         except sqlite3.IntegrityError:
             showinfo(message="Такой логин уже существует")
     window = Toplevel()
+    window.grab_set()
     window.title('Регистрация')
     window.geometry("400x100")
     window.minsize(400, 100)
@@ -202,6 +200,7 @@ def openaddnote():
         showinfo(message="Выход не выполнен")
     else:
         window = Toplevel()
+        window.grab_set()
         window.title("Добавление записи")
         window.geometry("400x300")
         window.minsize(400, 300)
@@ -241,42 +240,57 @@ def imageselected(event):
         imagevalues = item["values"]
 def viewnote():
     """Просмотр текста"""
-    def gettextname():
-        cursor.execute("SELECT textname FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
-        return cursor.fetchall()
-    def gettext():
-        cursor.execute("SELECT text FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
-        return decryptdata(cursor.fetchall()[0][0], currentpassword).decode()
-    window = Toplevel()
-    window.title("Просмотр записи")
-    window.geometry("400x300")
-    window.minsize(400, 300)
-    window.columnconfigure(0, weight=1)
-    window.rowconfigure(1, weight=1)
-    window.resizable(True, True)
+    if currentuser == "":
+        showinfo(message="Выход не выполнен")
+    else:
+        def gettextname():
+            cursor.execute("SELECT textname FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
+            return cursor.fetchall()
+        def gettext():
+            cursor.execute("SELECT text FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
+            return decryptdata(cursor.fetchall()[0][0], currentpassword).decode()
+        window = Toplevel()
+        window.grab_set()
+        window.title("Просмотр записи")
+        window.geometry("400x300")
+        window.minsize(400, 300)
+        window.columnconfigure(0, weight=1)
+        window.rowconfigure(1, weight=1)
+        window.resizable(True, True)
 
-    textname = Label(window, text=gettextname(), anchor=N)
-    textname.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
-    text = Label(window, text=gettext(), anchor=N)
-    text.grid(column=0, row=1, sticky=NSEW, padx=10 , pady=10)
+        textname = Label(window, text=gettextname(), anchor=N)
+        textname.grid(column=0, row=0, sticky=EW, padx=10, pady=10)
+        text = Text(window, wrap="word")
+        text.insert(END, gettext())
+        text.config(state="disabled")
+        text.grid(column=0, row=1, sticky=NSEW, padx=10 , pady=10)
 def viewimage():
     """Просмотр изображения"""
-    cursor.execute("SELECT image FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
-    with open("tempimage", 'wb') as file:
-        file.write(decryptdata(cursor.fetchall()[0][0], currentpassword))
-    tempimage = Image.open("tempimage")
-    tempimage.show()
-    remove("tempimage")
+    if currentuser == "":
+        showinfo(message="Выход не выполнен")
+    else:
+        cursor.execute("SELECT image FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
+        with open("tempimage", 'wb') as file:
+            file.write(decryptdata(cursor.fetchall()[0][0], currentpassword))
+        tempimage = Image.open("tempimage")
+        tempimage.show()
+        remove("tempimage")
 def deletenote():
     """Удаление выбранной записи"""
-    cursor.execute("DELETE FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
-    connection.commit()
-    update()
+    if currentuser == "":
+        showinfo(message="Выход не выполнен")
+    else:
+        cursor.execute("DELETE FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
+        connection.commit()
+        update()
 def deleteimage():
     """Удаление выбранного изображения"""
-    cursor.execute("DELETE FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
-    connection.commit()
-    update()
+    if currentuser == "":
+        showinfo(message="Выход не выполнен")
+    else:
+        cursor.execute("DELETE FROM images WHERE owner = ? AND imagename = ? AND date = ?", (currentuser, imagevalues[0], imagevalues[1]))
+        connection.commit()
+        update()
 
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
