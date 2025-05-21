@@ -1,5 +1,6 @@
 """
-Кириллица не работает лол
+Текст выводить в несколько строк
+Текст не открывать и удалять без входа (пикчи тоже)
 """
 import sqlite3
 import bcrypt
@@ -42,10 +43,11 @@ def encryptdata(data: bytes, password: str) -> bytes:
 
     dataenc = f.encrypt(data)
 
-    return salt + dataenc
+    return base64.urlsafe_b64encode(salt + dataenc)
 def decryptdata(dataenc: bytes, password: str) -> bytes:
     """Дешифрование данных с паролем"""
     passwordb = password.encode()
+    dataenc = base64.urlsafe_b64decode(dataenc)
     salt = dataenc[:16]
     dataenc = dataenc[16:]
     
@@ -244,7 +246,7 @@ def viewnote():
         return cursor.fetchall()
     def gettext():
         cursor.execute("SELECT text FROM notes WHERE owner = ? AND date = ?", (currentuser, textvalues[1]))
-        return decryptdata(cursor.fetchall()[0][0], currentpassword)
+        return decryptdata(cursor.fetchall()[0][0], currentpassword).decode()
     window = Toplevel()
     window.title("Просмотр записи")
     window.geometry("400x300")
